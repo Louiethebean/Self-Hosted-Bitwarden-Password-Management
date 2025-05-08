@@ -1,0 +1,54 @@
+
+Self-Hosted Bitwarden (Vaultwarden) Installation Guide
+=======================================================
+
+This guide walks you through setting up a self-hosted Bitwarden-compatible password manager using Vaultwarden (formerly Bitwarden_RS). It is a lightweight, unofficial implementation of the Bitwarden server API.
+
+Prerequisites
+-------------
+- Ubuntu 20.04 or later (or any Linux with Docker support)
+- Root or sudo access
+- Domain name (optional but recommended for HTTPS)
+- Docker & Docker Compose installed
+
+Step 1: Install Docker and Docker Compose
+-----------------------------------------
+sudo apt update
+sudo apt install -y docker.io docker-compose
+sudo systemctl enable docker
+sudo systemctl start docker
+
+Step 2: Create Project Directory
+--------------------------------
+mkdir -p ~/vaultwarden
+cd ~/vaultwarden
+
+Step 3: Create docker-compose.yml
+---------------------------------
+Create a file named 'docker-compose.yml' with the following content:
+
+version: '3'
+
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - ./vw-data:/data
+    environment:
+      WEBSOCKET_ENABLED: "true" # Enable live sync
+      SIGNUPS_ALLOWED: "false"  # Disable public signups (set to true for testing)
+      ADMIN_TOKEN: "your_admin_token_here"
+
+(Note: Replace 'your_admin_token_here' with a secure token for the admin dashboard.)
+
+Step 4: Launch Vaultwarden
+--------------------------
+docker-compose up -d
+
+Step 5: Secure with HTTPS (Optional - Recommended)
+--------------------------------------------------
+Use a reverse proxy with SSL support like NGINX + Let's Encrypt (via Certbot) for HTTPS support.
